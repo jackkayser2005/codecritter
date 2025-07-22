@@ -10,8 +10,8 @@ ref = os.getenv("GITHUB_REF")
 if not openai_key:
     print("No OPENAI_API_KEY provided; No access to AI models")
 else:
-    import openai
-    openai.api_key = openai_key
+    from openai import OpenAI
+    client = OpenAI(api_key=openai_key)
 
 pr_number = ref.split('/')[2] #so this splits the ref iE refs/pull/42/merge inti [refs, pull,  42, merge]
 #then getting the second value of that array returns the PR number which we can use later 
@@ -67,7 +67,7 @@ for file in files:
             "You are able to detect bugs and fix issues as a senior developer would\n"
             "you are to be a helpful assistant and aid the user in any way possible."
         )
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model='gpt-4.1-nano',
             temperature=0.3,
             max_tokens=200,
