@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: creepy crawly
-        env:  
+      - name: creepy crawly 
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: echo "TOKEN_LENGTH=${#GITHUB_TOKEN}"
+        run: python crit.py

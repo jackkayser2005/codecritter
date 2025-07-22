@@ -1,6 +1,6 @@
 #grab the environment variables first 
 import os, requests, json, sys
-
+print("PYTHON_ENV_TOKEN_LENGTH", len(os.getenv("GITHUB_TOKEN") or 'None'))
 token = os.getenv("GITHUB_TOKEN") # this is injected by actions 
 repo = os.getenv("GITHUB_REPOSITORY") # onwwe/reposname
 print(repo)
@@ -17,8 +17,7 @@ url = f"https://api.github.com/repos/{repo_owner}/{repo_repo}/pulls/{pr_number}/
 #create the url based on the info we have grabbed 
 
 headers = {
-    "Authorization": f"token {token}",
-    "Accept": "application/vnd.github.v3+json"
+    "Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"
 }
 
 print("DEBUG: token Length", len(token) if token else "None") #quick check 
