@@ -16,12 +16,15 @@ url = f"https://api.github.com/repos/{repo_owner}/{repo_repo}/pulls/{pr_number}/
 
 #create the url based on the info we have grabbed 
 
-header = {
+headers = {
     "Authorization": f"token {token}",
     "Accept": "application/vnd.github.v3+json"
 }
+
+print("DEBUG: token Length", len(token) if token else "None") #quick check 
+
 #created the auth header 
-response = requests.get(url, headers=header, timeout=30)
+response = requests.get(url, headers=headers, timeout=30)
 response.raise_for_status()#this will throw an errors 
 
 
