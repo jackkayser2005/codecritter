@@ -2,7 +2,8 @@ name: CI
 
 permissions:
   contents: read
-  pull-requests: read #add some permissions to try to get corrections running 
+  pull-requests: read
+  issues: write  #add some permissions to try to get corrections running 
 
 on:
   pull_request:
