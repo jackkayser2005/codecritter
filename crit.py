@@ -37,7 +37,7 @@ files = response.json()
 for file in files:
     if file['patch'] == None or file['additions'] == 0:
         continue # if this is the case we have nothing to parse 
-    patch = PatchSet(file["patch"])
+    patch = PatchSet(file['patch'])
     added_lines = []
     for patched_file in patch:
         for hunk in patched_file:
