@@ -36,7 +36,7 @@ response.raise_for_status()#this will throw an errors
 
 files = response.json() 
 
-
+feedback_by_file = {}    
 
 
 for file in files:
@@ -74,6 +74,19 @@ for file in files:
             messages=[{"role": "user", "content": prompt}]
         )
         feedback = response.choices[0].message.content.strip() 
+        feedback_by_file[filename] = feedback
         print(f"\n AI feedback for {filename}:\n{feedback}\n")
     else:
         print(f"Skipped {filename} (no added Lines or no API key)")
+if feedback_by_file:
+    comment_body = "### CodeCritter review\n"
+    for fname, text in feedback_by_file.items():
+        comment_body+= f"**{fname}**\n{text}\n\n"
+        
+        post = requests.post(f"https://api.github.com/repos/{repo_owner}/{repo_repo}/issues/{pr_number}/comments",
+        headers={"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"},
+        json={"body":comment_body},
+        timeout=20
+        )
+        post.raise_for_status()
+        print("Comment Posted:", post.json()["html_url"])
