@@ -1,9 +1,10 @@
 #grab the environment variables first 
 import os, requests, json, sys
-print("PYTHON_ENV_TOKEN_LENGTH", len(os.getenv("GITHUB_TOKEN") or 'None'))
+import urllib.request 
+from unidiff import PatchSet
 token = os.getenv("GITHUB_TOKEN") # this is injected by actions 
 repo = os.getenv("GITHUB_REPOSITORY") # onwwe/reposname
-print(repo)
+
 ref = os.getenv("GITHUB_REF")
 
 pr_number = ref.split('/')[2] #so this splits the ref iE refs/pull/42/merge inti [refs, pull,  42, merge]
@@ -30,7 +31,19 @@ response.raise_for_status()#this will throw an errors
 
 files = response.json() 
 
-for f in files:
-    print(" *", f["filename"])
+
+
+
+for file in files:
+    if file['patch'] == None or file['additions'] == 0:
+        continue # if this is the case we have nothing to parse 
+    patch = PatchSet(file["patch"])
+    added_lines = []
+    for patched_file in patch:
+        for hunk in patched_file:
+            for line in hunk: 
+                if line.is_added:
+                    added_lines.append(line.value)
+    print(file['filename'], len(added_lines), "added lines")
 
 
