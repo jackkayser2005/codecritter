@@ -21,7 +21,7 @@ headers = {
     "Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"
 }
 
-print("DEBUG: token Length", len(token) if token else "None") #quick check 
+
 
 #created the auth header 
 response = requests.get(url, headers=headers, timeout=30)
@@ -35,14 +35,13 @@ files = response.json()
 
 
 for file in files:
-    if file['patch'] == None or file['additions'] == 0:
-         continue # if this is the case we have nothing to parse 
+    raw_patch = file.get("patch")
+    if raw_patch == None or file['additions'] == 0:
+         continue  #this will now be changed to skip any binary huge or anything with no changes 
     filename = file['filename'] 
-    raw_patch = file['patch'] # we are reconstructing a kind of header so we do not get yelled at 
+     # we are reconstructing a kind of header so we do not get yelled at 
     header = f"--- a/{filename}\n+++ b/{filename}\n" #disgusting behavior on this 
     full_patch = header + raw_patch
-    
-       
     patch = PatchSet(full_patch)
     added_lines = []
     for patched_file in patch:
