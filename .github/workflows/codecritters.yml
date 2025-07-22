@@ -10,4 +10,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Say hello
-        run: echo "Hello, world!"
+        run: python crit.py
