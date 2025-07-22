@@ -14,8 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Token sanity
- 
+      - name: creepy crawly
         env:  
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: echo "TOKEN_PRESENT=${{ secrets.GITHUB_TOKEN != '' }}"
+        run: echo "TOKEN_LENGTH=${#GITHUB_TOKEN}"
