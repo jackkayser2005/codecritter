@@ -33,14 +33,16 @@ files = response.json()
 
 
 
-header = f"--- a/{filename}\n+++ b/{filename}\n"
+
 for file in files:
-    filename = file["filename"] 
-    raw_patch = file["patch"] # we are reconstructing a kind of header so we do not get yelled at 
-    header = f"--- a/{filename}\n+++ b/{filename}\n"
-    full_patch = header + raw_patch
     if file['patch'] == None or file['additions'] == 0:
-        continue # if this is the case we have nothing to parse 
+         continue # if this is the case we have nothing to parse 
+    filename = file['filename'] 
+    raw_patch = file['patch'] # we are reconstructing a kind of header so we do not get yelled at 
+    header = f"--- a/{filename}\n+++ b/{filename}\n" #disgusting behavior on this 
+    full_patch = header + raw_patch
+    
+       
     patch = PatchSet(full_patch)
     added_lines = []
     for patched_file in patch:
