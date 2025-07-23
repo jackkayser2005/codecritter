@@ -1,6 +1,5 @@
 #grab the environment variables first 
-import os, requests, json, sys
-import urllib.request 
+import os, requests, sys 
 from unidiff import PatchSet
 token = os.getenv("GITHUB_TOKEN") # this is injected by actions 
 repo = os.getenv("GITHUB_REPOSITORY") # onwwe/reposname
@@ -18,13 +17,26 @@ pr_number = ref.split('/')[2] #so this splits the ref iE refs/pull/42/merge inti
 repo_owner = repo.split('/')[0] 
 repo_repo = repo.split('/')[1]
 
+headers = {
+    "Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"
+}
+
+def has_existing_comment():
+    r = requests.get( f"https://api.github.com/repos/{repo_owner}/{repo_repo}/issues/{pr_number}/comments", 
+                     headers=headers,
+                     timeout=20,
+                     )
+    r.raise_for_status()
+    for c in r.json():
+       if c["user"]["login"] == "github-actions[bot]" and \
+           c["body"].startswith("### CodeCritter review"):
+            return True
+    return False 
 url = f"https://api.github.com/repos/{repo_owner}/{repo_repo}/pulls/{pr_number}/files?per_page=100"
 
 #create the url based on the info we have grabbed 
 
-headers = {
-    "Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"
-}
+
 
 
 
@@ -78,15 +90,18 @@ for file in files:
         print(f"\n AI feedback for {filename}:\n{feedback}\n")
     else:
         print(f"Skipped {filename} (no added Lines or no API key)")
-if feedback_by_file:
+if feedback_by_file and not has_existing_comment():
     comment_body = "### CodeCritter review\n"
     for fname, text in feedback_by_file.items():
         comment_body+= f"**{fname}**\n{text}\n\n"
         
-        post = requests.post(f"https://api.github.com/repos/{repo_owner}/{repo_repo}/issues/{pr_number}/comments",
-        headers={"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"},
-        json={"body":comment_body},
-        timeout=20
-        )
-        post.raise_for_status()
-        print("Comment Posted:", post.json()["html_url"])
+    post = requests.post(f"https://api.github.com/repos/{repo_owner}/{repo_repo}/issues/{pr_number}/comments",
+    headers={"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"},
+    json={"body":comment_body},
+    timeout=20
+    )
+    post.raise_for_status()
+    print("Comment Posted:", post.json()["html_url"])
+else:
+    print("Skip posting feedback empty or comment already exists.")
+
