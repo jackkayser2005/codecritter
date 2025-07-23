@@ -90,6 +90,12 @@ for file in files:
         print(f"\n AI feedback for {filename}:\n{feedback}\n")
     else:
         print(f"Skipped {filename} (no added Lines or no API key)")
+    
+# skip comment on forked PRs so we do not have issues with githubs native functionality
+if os.getenv("GITHUB_HEAD_REF") and \
+   os.getenv("GITHUB_HEAD_REPOSITORY") != os.getenv("GITHUB_REPOSITORY"):
+    print("Forked PR detected skipping comment to avoid 403.")
+    feedback_by_file = {}          # force skip
 if feedback_by_file and not has_existing_comment():
     comment_body = "### CodeCritter review\n"
     for fname, text in feedback_by_file.items():
