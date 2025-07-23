@@ -25,9 +25,22 @@ AI-powered pull-request reviewer for GitHub.
 * ESLint/Radon integration  
 * Cached feedback to skip unchanged files
 
-Screenshot of a sample PR comment ↓
+## 🛡️  Permissions & Fork Behaviour
 
-![screenshot](docs/screenshot.png)
+| Scenario | What happens | Why |
+|----------|--------------|-----|
+| **PR from a branch in the *same* repo** | CodeCritter posts a single `### CodeCritter review` comment. | Workflow’s `issues: write` permission + repo’s *Read & write* token are available. |
+| **PR from a fork** | Comment is **not** posted. Feedback is still visible in **Actions → Logs**. | GitHub supplies a **read-only** token to workflows triggered by forked PRs. Attempting to write would 403. |
+
+### Enabling comments on fork PRs (optional)
+
+1. **Repo Settings → Actions → General → Workflow permissions**  
+   Set to **Read & write**.  
+2. Replace the fork-guard or add a writable token:  
+   * Use a second workflow that triggers on `pull_request_target`, **or**  
+   * Provide a fine-grained PAT secret with “Issues: write” scope.
+
+If you prefer the safer default, keep the guard as-is; reviewers can still read CodeCritter’s suggestions in the Action log.
 
 ## License
 MIT – see LICENSE file.
